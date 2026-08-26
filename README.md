@@ -25,7 +25,7 @@ python3 -m venv .venv
 .venv/bin/jupyter lab      # select the "Python (dsci521-nfl)" kernel
 ```
 
-Run the notebooks from the repository root — `src/` and the `data/` cache are resolved relative to it.
+Run the notebooks from the repository root - `src/` and the `data/` cache are resolved relative to it.
 
 ## Data
 
