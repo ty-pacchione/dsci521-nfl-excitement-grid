@@ -1,0 +1,12 @@
+# Local virtual environment
+.venv/
+
+# Cached datasets (re-downloaded on demand by src/data.py)
+data/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/

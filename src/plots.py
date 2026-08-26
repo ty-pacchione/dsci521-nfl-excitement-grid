@@ -1,6 +1,19 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+
+# House palette, shared with the analysis notebook. GEI is a magnitude, so the
+# excitement grid uses a single-hue sequential ramp (light = low) rather than a
+# rainbow -- with a rainbow, readers cannot tell which end is "more".
+SERIES_BLUE = "#2a78d6"
+INK_MUTED = "#898781"
+GRIDLINE = "#e1e0d9"
+BLUE_RAMP = LinearSegmentedColormap.from_list(
+    "gei_blues",
+    ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b"],
+)
+
 
 def show_wp_graph(game: pd.Series, plays: pd.DataFrame) -> None:
     season = game["season"]
@@ -29,7 +42,7 @@ def show_wp_graph(game: pd.Series, plays: pd.DataFrame) -> None:
     seconds_elapsed = (plays["qtr"] - 1) * 900 + (quarter_length - plays["quarter_seconds_remaining"])
 
     plt.figure(figsize=(15, 8))
-    plt.plot(seconds_elapsed, plays["away_wp"], linewidth=2)
+    plt.plot(seconds_elapsed, plays["away_wp"], linewidth=2, color=SERIES_BLUE)
     plt.ylabel(f"{away_team} Win Probability")
     plt.title(f"{away_team} @ {home_team} ({season} {week})")
 
@@ -72,7 +85,7 @@ def show_excitement_chart(games: pd.DataFrame, plays: pd.DataFrame) -> None:
     label_matrix = games_wexc.pivot(index="week_index", columns="week", values="label")
 
     fig, ax = plt.subplots(figsize=(15, 8))
-    im = ax.imshow(value_matrix.values, cmap="RdYlBu_r", aspect="auto", vmin=0, vmax=12)
+    im = ax.imshow(value_matrix.values, cmap=BLUE_RAMP, aspect="auto", vmin=0, vmax=12)
 
     cbar = fig.colorbar(im, ax=ax)
     cbar.set_label("Total Absolute WPA")
@@ -92,10 +105,12 @@ def show_excitement_chart(games: pd.DataFrame, plays: pd.DataFrame) -> None:
         for j in range(value_matrix.shape[1]):
             val = value_matrix.values[i, j]
             if not np.isnan(val):
+                # Flip the label to white once the tile is dark enough that black
+                # ink would drop below readable contrast.
                 ax.text(
                     j, i, label_matrix.values[i, j],
                     ha="center", va="center",
-                    fontsize=6, color="black"
+                    fontsize=6, color="white" if val > 7 else "#0b0b0b"
                 )
 
     ax.set_title(f"Excitement Scores ({season} NFL Season)")
